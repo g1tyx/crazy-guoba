@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>疯狂的锅巴</title>
+    <title>疯狂的卷王（作者：别再浮夸了群小组）</title>
     <style>
         body {
             font-family: 'Microsoft YaHei', sans-serif;
@@ -121,6 +121,7 @@
         .btn-outline {
             background-color: transparent;
             border: 1px solid #333;
+            color: black;
         }
         .btn-outline:hover {
             background-color: #333;
@@ -207,6 +208,7 @@
             padding: 10px;
             min-height: 100px;
             position: relative;
+            cursor: pointer;
         }
         .slot-name {
             position: absolute;
@@ -346,27 +348,6 @@
         .auto-sell-settings button {
             margin-top: 10px;
         }
-        .attribute-points {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-            margin-bottom: 20px;
-        }
-        .attribute-point-item {
-            flex: 1;
-            min-width: 120px;
-            padding: 10px;
-            background-color: #f5f5f5;
-            border-radius: 5px;
-            text-align: center;
-        }
-        .attribute-point-value {
-            font-size: 24px;
-            font-weight: bold;
-        }
-        .attribute-point-btn {
-            margin-top: 10px;
-        }
         .shop-items {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
@@ -414,20 +395,59 @@
             margin-left: 5px;
         }
         /* 背包界面按钮样式 */
-        .btn-wear, .btn-lock, .btn-sell {
+        .btn-wear, .btn-lock, .btn-sell, .btn-unequip {
             color: black; /* 设置字体颜色为黑色 */
         }
         /* 装备界面脱下按钮字体颜色 */
         .btn-remove-equipment {
             color: black; /* 设置字体颜色为黑色 */
         }
-        /* 背包界面脱下按钮字体颜色 */
-        .btn-unequip {
-            color: black; /* 设置脱下按钮字体颜色为黑色 */
+        /* 装备选择弹窗 */
+        .equipment-selection-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
         }
-        /* 铁匠铺界面选择按钮字体颜色 */
-        .btn-select-equipment {
-            color: black; /* 设置字体颜色为黑色 */
+        .equipment-selection-content {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 5px;
+            max-width: 600px; /* 设置最大宽度 */
+            width: 80%;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+            max-height: 80vh; /* 设置最大高度为视口高度的80% */
+            overflow-y: auto; /* 启用垂直滚动 */
+        }
+        .equipment-selection-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        .equipment-selection-title {
+            font-size: 18px;
+            font-weight: bold;
+        }
+        .equipment-selection-close {
+            cursor: pointer;
+            font-size: 20px;
+        }
+        .equipment-selection-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        .equipment-selection-footer {
+            display: flex;
+            justify-content: flex-end;
         }
     </style>
 </head>
@@ -436,7 +456,7 @@
     <script src="core.js"></script>
     <div class="container">
         <div class="header">
-            <h1>疯狂的锅巴</h1>
+            <h1>疯狂的卷王（作者：别再浮夸了群小组）</h1>
         </div>
         
         <div class="tabs">
@@ -461,44 +481,20 @@
                     </div>
                 </div>
                 <div class="stat-item">
-                    <div>生命值: <span id="character-hp">100</span></div>
-                    <div>魔法值: <span id="character-mp">100</span></div>
+                    <div>生命值: <span id="character-hp">30</span></div>
+                    <div>魔法值: <span id="character-mp">30</span></div>
                     <div>攻击力: <span id="character-attack">5</span></div>
                     <div>防御力: <span id="character-defense">5</span></div>
                 </div>
                 <div class="stat-item">
                     <div>金币: <span id="character-gold">0</span></div>
                     <div>水晶: <span id="character-crystal">0</span></div>
-                    <div>属性点: <span id="character-attr-points">0</span></div>
                 </div>
                 <div class="stat-item">
-                    <div>力量: <span id="character-str">25</span></div>
-                    <div>敏捷: <span id="character-agi">25</div>
-                    <div>体力: <span id="character-vit">25</div>
-                    <div>智力: <span id="character-int">25</div>
-                </div>
-            </div>
-            
-            <div class="attribute-points" id="attribute-points-container">
-                <div class="attribute-point-item">
-                    <div>力量</div>
-                    <div class="attribute-point-value" id="str-value">0</div>
-                    <button class="btn attribute-point-btn" data-attr="str">+1</button>
-                </div>
-                <div class="attribute-point-item">
-                    <div>敏捷</div>
-                    <div class="attribute-point-value" id="agi-value">0</div>
-                    <button class="btn attribute-point-btn" data-attr="agi">+1</button>
-                </div>
-                <div class="attribute-point-item">
-                    <div>体力</div>
-                    <div class="attribute-point-value" id="vit-value">0</div>
-                    <button class="btn attribute-point-btn" data-attr="vit">+1</button>
-                </div>
-                <div class="attribute-point-item">
-                    <div>智力</div>
-                    <div class="attribute-point-value" id="int-value">0</div>
-                    <button class="btn attribute-point-btn" data-attr="int">+1</button>
+                    <div>暴击率: <span id="character-crit-rate">0%</span></div>
+                    <div>暴击伤害: <span id="character-crit-damage">0%</span></div>
+                    <div>攻击力加成: <span id="character-attack-bonus">0%</span></div>
+                    <div>防御力加成: <span id="character-defense-bonus">0%</span></div>
                 </div>
             </div>
             
@@ -517,65 +513,68 @@
             
             <h3>战斗信息</h3>
             <div class="battle-log" id="battle-log">
-                <div class="log-entry">欢迎来到疯狂的锅巴游戏！</div>
+                <div class="log-entry">欢迎来到疯狂的卷王游戏！</div>
                 <div class="log-entry">请选择地图开始冒险！</div>
             </div>
+            
+            <!-- 暂停战斗按钮 -->
+            <button class="btn btn-danger" id="pause-battle" style="margin-top: 10px;">暂停战斗</button>
         </div>
         
         <div id="equipment" class="content">
             <h2>装备系统</h2>
             <div class="equipment-slot">
-                <div class="slot">
+                <div class="slot" data-slot="weapon-main">
                     <div class="slot-name">主手武器</div>
-                    <div id="weapon-main" class="slot-empty">空</div>
+                    <div class="slot-content" id="weapon-main-content">空</div>
                 </div>
-                <div class="slot">
+                <div class="slot" data-slot="weapon-off">
                     <div class="slot-name">副手武器</div>
-                    <div id="weapon-off" class="slot-empty">空</div>
+                    <div class="slot-content" id="weapon-off-content">空</div>
                 </div>
-                <div class="slot">
+                <div class="slot" data-slot="helmet">
                     <div class="slot-name">头盔</div>
-                    <div id="helmet" class="slot-empty">空</div>
+                    <div class="slot-content" id="helmet-content">空</div>
                 </div>
-                <div class="slot">
+                <div class="slot" data-slot="armor">
                     <div class="slot-name">护甲</div>
-                    <div id="armor" class="slot-empty">空</div>
+                    <div class="slot-content" id="armor-content">空</div>
                 </div>
-                <div class="slot">
+                <div class="slot" data-slot="gloves">
                     <div class="slot-name">手套</div>
-                    <div id="gloves" class="slot-empty">空</div>
+                    <div class="slot-content" id="gloves-content">空</div>
                 </div>
-                <div class="slot">
+                <div class="slot" data-slot="boots">
                     <div class="slot-name">鞋子</div>
-                    <div id="boots" class="slot-empty">空</div>
+                    <div class="slot-content" id="boots-content">空</div>
                 </div>
-                <div class="slot">
+                <div class="slot" data-slot="legs">
                     <div class="slot-name">护腿</div>
-                    <div id="legs" class="slot-empty">空</div>
+                    <div class="slot-content" id="legs-content">空</div>
                 </div>
-                <div class="slot">
+                <div class="slot" data-slot="necklace">
                     <div class="slot-name">项链</div>
-                    <div id="necklace" class="slot-empty">空</div>
+                    <div class="slot-content" id="necklace-content">空</div>
                 </div>
-                <div class="slot">
+                <div class="slot" data-slot="ring-left">
                     <div class="slot-name">左戒指</div>
-                    <div id="ring-left" class="slot-empty">空</div>
+                    <div class="slot-content" id="ring-left-content">空</div>
                 </div>
-                <div class="slot">
+                <div class="slot" data-slot="ring-right">
                     <div class="slot-name">右戒指</div>
-                    <div id="ring-right" class="slot-empty">空</div>
+                    <div class="slot-content" id="ring-right-content">空</div>
                 </div>
-                <div class="slot">
+                <div class="slot" data-slot="amulet">
                     <div class="slot-name">护符</div>
-                    <div id="amulet" class="slot-empty">空</div>
+                    <div class="slot-content" id="amulet-content">空</div>
                 </div>
-                <div class="slot">
+                <div class="slot" data-slot="badge">
                     <div class="slot-name">徽章</div>
-                    <div id="badge" class="slot-empty">空</div>
+                    <div class="slot-content" id="badge-content">空</div>
                 </div>
-                <div class="slot">
+                <div class="slot" data-slot="artefact">
                     <div class="slot-name">法器</div>
-                    <div id="artefact" class="slot-empty">空</div>
+                    <div class="slot-content" id="artefact-content">空</div>
                 </div>
             </div>
         </div>
@@ -641,11 +640,6 @@
             <h2>水晶商店</h2>
             <div class="shop-items">
                 <div class="shop-item">
-                    <div class="shop-item-name">属性点</div>
-                    <div class="shop-item-price">10水晶/点</div>
-                    <button class="btn" id="buy-attr-point">购买</button>
-                </div>
-                <div class="shop-item">
                     <div class="shop-item-name">提升卷轴</div>
                     <div class="shop-item-price">10水晶</div>
                     <button class="btn" id="buy-evolve-scroll">购买</button>
@@ -663,17 +657,6 @@
             <h3>秘境地图</h3>
             <div class="map-list" id="secret-maps">
                 <!-- 秘境地图将通过JS动态生成 -->
-            </div>
-            
-            <h3>战斗设置</h3>
-            <div>
-                <label>自动战斗速度:</label>
-                <select id="battle-speed">
-                    <option value="3000">3秒/次</option>
-                    <option value="2000">2秒/次</option>
-                    <option value="1000" selected>1秒/次</option>
-                    <option value="500">0.5秒/次</option>
-                </select>
             </div>
         </div>
         
@@ -702,10 +685,42 @@
                 </div>
                 <div class="modal-body">
                     <p>恭喜你达到200级！你的角色已经觉醒！</p>
-                    <p>等级已重置为1，获得100属性点</p>
+                    <p>等级已重置为1，获得100觉醒点</p>
                 </div>
                 <div class="modal-footer">
                     <button class="btn btn-success" id="awakening-confirm-btn">确认</button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 战斗中操作提示弹窗 -->
+        <div id="battle-operation-modal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <span class="modal-title">提示</span>
+                    <span class="modal-close">&times;</span>
+                </div>
+                <div class="modal-body">
+                    <p>请先暂停战斗再进行此操作。</p>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn" id="battle-operation-close-btn">关闭</button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 装备选择弹窗 -->
+        <div id="equipment-selection-modal" class="equipment-selection-modal">
+            <div class="equipment-selection-content">
+                <div class="equipment-selection-header">
+                    <span class="equipment-selection-title">选择装备</span>
+                    <span class="equipment-selection-close" id="equipment-selection-close"></span>&times;</span>
+                </div>
+                <div class="equipment-selection-grid" id="equipment-selection-grid">
+                    <!-- 装备选择内容将通过JS动态生成 -->
+                </div>
+                <div class="equipment-selection-footer">
+                    <button class="btn btn-outline" id="equipment-selection-cancel">取消</button>
                 </div>
             </div>
         </div>
@@ -718,23 +733,20 @@
                 level: 1,
                 exp: 0,
                 maxExp: 100,
-                attrPoints: 0,
                 awakeningPoints: 0,
                 awakeningLevel: 0,
-                stats: {
-                    str: 25,
-                    agi: 25,
-                    vit: 25,
-                    int: 25
-                },
                 derivedStats: {
-                    hp: 25,
-                    mp: 25,
                     attack: 5,
                     defense: 5,
+                    hp: 30,
+                    mp: 30,
                     expBonus: 0,
                     goldBonus: 0,
-                    crystalBonus: 0
+                    crystalBonus: 0,
+                    critRate: 0,
+                    critDamage: 0,
+                    attackBonus: 0,
+                    defenseBonus: 0
                 },
                 gold: 0,
                 crystal: 0
@@ -761,7 +773,7 @@
                 normal: [
                     { 
                         id: 0, 
-                        name: "婴儿锅巴", 
+                        name: "婴儿卷王", 
                         minLevel: 1, 
                         maxLevel: 3, 
                         bossLevel: 3, 
@@ -771,7 +783,7 @@
                     },
                     { 
                         id: 1, 
-                        name: "幼儿园锅巴", 
+                        name: "幼儿园卷王", 
                         minLevel: 1, 
                         maxLevel: 10, 
                         bossLevel: 10, 
@@ -781,7 +793,7 @@
                     },
                     { 
                         id: 2, 
-                        name: "小学锅巴", 
+                        name: "小学卷王", 
                         minLevel: 11, 
                         maxLevel: 20, 
                         bossLevel: 20, 
@@ -791,7 +803,7 @@
                     },
                     { 
                         id: 3, 
-                        name: "初中锅巴", 
+                        name: "初中卷王", 
                         minLevel: 21, 
                         maxLevel: 30, 
                         bossLevel: 30, 
@@ -801,7 +813,7 @@
                     },
                     { 
                         id: 4, 
-                        name: "高中锅巴", 
+                        name: "高中卷王", 
                         minLevel: 31, 
                         maxLevel: 40, 
                         bossLevel: 40, 
@@ -811,7 +823,7 @@
                     },
                     { 
                         id: 5, 
-                        name: "大学锅巴", 
+                        name: "大学卷王", 
                         minLevel: 41, 
                         maxLevel: 50, 
                         bossLevel: 50, 
@@ -821,7 +833,7 @@
                     },
                     { 
                         id: 6, 
-                        name: "工程部锅巴", 
+                        name: "工程部卷王", 
                         minLevel: 51, 
                         maxLevel: 60, 
                         bossLevel: 60, 
@@ -833,7 +845,7 @@
                 secret: [
                     { 
                         id: 7, 
-                        name: "锅巴1粒伟哥存放处", 
+                        name: "卷王1粒伟哥存放处", 
                         minLevel: 71, 
                         maxLevel: 90, 
                         bossLevel: 95, 
@@ -843,7 +855,7 @@
                     },
                     { 
                         id: 8, 
-                        name: "锅巴9粒伟哥存放处", 
+                        name: "卷王9粒伟哥存放处", 
                         minLevel: 91, 
                         maxLevel: 110, 
                         bossLevel: 115, 
@@ -853,7 +865,7 @@
                     },
                     { 
                         id: 9, 
-                        name: "锅巴99粒伟哥存放处", 
+                        name: "卷王99粒伟哥存放处", 
                         minLevel: 116, 
                         maxLevel: 140, 
                         bossLevel: 145, 
@@ -863,7 +875,7 @@
                     },
                     { 
                         id: 10, 
-                        name: "锅巴999粒伟哥存放处", 
+                        name: "卷王999粒伟哥存放处", 
                         minLevel: 141, 
                         maxLevel: 165, 
                         bossLevel: 170, 
@@ -873,7 +885,7 @@
                     },
                     { 
                         id: 11, 
-                        name: "锅巴9999粒伟哥存放处", 
+                        name: "卷王9999粒伟哥存放处", 
                         minLevel: 170, 
                         maxLevel: 200, 
                         bossLevel: 200, 
@@ -899,12 +911,12 @@
 
         // 装备品质定义
         const equipmentQuality = {
-            common: { name: "普通", color: "#ffffff", dropRate: 0.05 },
-            uncommon: { name: "精良", color: "#4CAF50", dropRate: 0.05 },
-            rare: { name: "稀有", color: "#2196F3", dropRate: 0.04 },
-            epic: { name: "史诗", color: "#9C27B0", dropRate: 0.03 },
-            legendary: { name: "传说", color: "#FFC107", dropRate: 0.02 },
-            mythic: { name: "神话", color: "#FF5722", dropRate: 0.01 }
+            common: { name: "普通", color: "#ffffff", dropRate: 0.05, baseMultiplier: 1, additionalCount: 1 },
+            uncommon: { name: "精良", color: "#4CAF50", dropRate: 0.05, baseMultiplier: 1.2, additionalCount: 2 },
+            rare: { name: "稀有", color: "#2196F3", dropRate: 0.04, baseMultiplier: 1.5, additionalCount: 3 },
+            epic: { name: "史诗", color: "#9C27B0", dropRate: 0.03, baseMultiplier: 2, additionalCount: 4 },
+            legendary: { name: "传说", color: "#FFC107", dropRate: 0.02, baseMultiplier: 3, additionalCount: 5 },
+            mythic: { name: "神话", color: "#FF5722", dropRate: 0.01, baseMultiplier: 4, additionalCount: 6 }
         };
 
         // 装备部位定义
@@ -926,19 +938,19 @@
 
         // 装备基础属性
         const equipmentBaseAttributes = {
-            'weapon-main': ["力量", "攻击速度"],
-            'weapon-off': ["力量", "攻击速度"],
-            'helmet': ["敏捷", "体力"],
-            'armor': ["敏捷", "体力"],
-            'gloves': ["敏捷", "体力"],
-            'boots': ["敏捷", "体力"],
-            'legs': ["敏捷", "体力"],
-            'necklace': ["智力", "暴击"],
-            'ring-left': ["智力", "暴击"],
-            'ring-right': ["智力", "暴击"],
-            'amulet': ["智力", "闪避"],
-            'badge': ["智力", "特殊抗性"],
-            'artefact': ["智力", "特殊抗性"]
+            'weapon-main': ["攻击力"],
+            'weapon-off': ["攻击力"],
+            'helmet': ["生命值", "魔法值"],
+            'armor': ["生命值", "防御力"],
+            'gloves': ["攻击力", "防御力"],
+            'boots': ["生命值", "魔法值"],
+            'legs': ["生命值", "防御力"],
+            'necklace': ["魔法值", "攻击力"],
+            'ring-left': ["魔法值", "攻击力"],
+            'ring-right': ["魔法值", "攻击力"],
+            'amulet': ["魔法值", "防御力"],
+            'badge': ["生命值", "魔法值"],
+            'artefact': ["魔法值", "攻击力"]
         };
 
         // 装备附加属性
@@ -960,8 +972,10 @@
             evolvePanel: document.getElementById('evolve-panel'),
             resultModal: document.getElementById('result-modal'),
             awakeningModal: document.getElementById('awakening-modal'),
-            attributePointsContainer: document.getElementById('attribute-points-container'),
-            wornEquipmentList: document.getElementById('worn-equipment-list')
+            wornEquipmentList: document.getElementById('worn-equipment-list'),
+            battleOperationModal: document.getElementById('battle-operation-modal'),
+            equipmentSelectionModal: document.getElementById('equipment-selection-modal'),
+            equipmentSelectionGrid: document.getElementById('equipment-selection-grid')
         };
 
         // 初始化游戏
@@ -1009,14 +1023,15 @@
             document.getElementById('character-attack').textContent = gameData.character.derivedStats.attack;
             document.getElementById('character-defense').textContent = gameData.character.derivedStats.defense;
             document.getElementById('character-gold').textContent = gameData.character.gold;
-            document.getElementById('character-crystal').textContent = gameData.character.crystal;
-            document.getElementById('character-attr-points').textContent = gameData.character.attrPoints;
             
-            // 更新属性点
-            document.getElementById('str-value').textContent = gameData.character.stats.str;
-            document.getElementById('agi-value').textContent = gameData.character.stats.agi;
-            document.getElementById('vit-value').textContent = gameData.character.stats.vit;
-            document.getElementById('int-value').textContent = gameData.character.stats.int;
+            // 更新水晶显示，限制小数点后两位
+            document.getElementById('character-crystal').textContent = parseFloat(gameData.character.crystal.toFixed(2));
+            
+            // 更新附加属性
+            document.getElementById('character-crit-rate').textContent = `${gameData.character.derivedStats.critRate}%`;
+            document.getElementById('character-crit-damage').textContent = `${gameData.character.derivedStats.critDamage}%`;
+            document.getElementById('character-attack-bonus').textContent = `${gameData.character.derivedStats.attackBonus}%`;
+            document.getElementById('character-defense-bonus').textContent = `${gameData.character.derivedStats.defenseBonus}%`;
             
             // 更新经验条
             const expPercentage = (gameData.character.exp / gameData.character.maxExp) * 100;
@@ -1024,7 +1039,7 @@
             
             // 更新装备槽位
             for (const slotId in gameData.equipment.slots) {
-                const slotElement = document.getElementById(slotId);
+                const slotElement = document.getElementById(`${slotId}-content`);
                 const equipment = gameData.equipment.slots[slotId];
                 
                 if (equipment) {
@@ -1046,7 +1061,7 @@
                         </div>
                     `;
                 } else {
-                    slotElement.innerHTML = '<div class="slot-empty">空</div>';
+                    slotElement.innerHTML = '空';
                 }
             }
             
@@ -1057,6 +1072,11 @@
             
             // 更新铁匠铺中的穿戴装备列表
             renderWornEquipment();
+            
+            // 更新附加属性显示
+            document.getElementById('exp-bonus').textContent = `${gameData.character.derivedStats.expBonus}%`;
+            document.getElementById('gold-bonus').textContent = `${gameData.character.derivedStats.goldBonus}%`;
+            document.getElementById('crystal-bonus').textContent = `${gameData.character.derivedStats.crystalBonus}%`;
         }
 
         // 渲染地图列表
@@ -1067,7 +1087,7 @@
                 const mapElement = document.createElement('div');
                 mapElement.className = `map-item ${gameData.character.level < map.requiredPlayerLevel ? 'locked' : ''}`;
                 
-                // 如果是婴儿锅巴地图，添加等级限制提示
+                // 如果是婴儿卷王地图，添加等级限制提示
                 if (map.id === 0) {
                     mapElement.innerHTML = `
                         <div class="map-name">${map.name}</div>
@@ -1141,7 +1161,7 @@
                     </div>
                     <div>
                         ${equipment.equipped ? '<button class="btn btn-outline btn-unequip">脱下</button>' : '<button class="btn btn-outline btn-wear">穿戴</button>'}
-                        ${equipment.locked ? '' : '<button class="btn btn-outline btn-lock">锁定</button>'}
+                        ${equipment.locked ? '<button class="btn btn-outline btn-unlock">解锁</button>' : '<button class="btn btn-outline btn-lock">锁定</button>'}
                         <button class="btn btn-outline btn-sell">售卖</button>
                     </div>
                 `;
@@ -1189,18 +1209,30 @@
             const qualityData = equipmentQuality[quality];
             const baseAttributes = equipmentBaseAttributes[slot];
             
-            // 生成基础属性值，根据装备等级
+            // 生成基础属性值，根据装备等级和品质
             const baseAttrValues = baseAttributes.map(attr => {
-                if (attr.includes("速度") || attr.includes("率") || attr.includes("抗性")) {
-                    return `${attr}: +${Math.floor(level * 0.5)}`;
-                } else {
-                    return `${attr}: +${Math.floor(level * 2)}`;
+                if (attr.includes("攻击力")) {
+                    const baseValue = Math.floor(level * 2);
+                    const qualityMultiplier = qualityData.baseMultiplier;
+                    return `${attr}: +${Math.floor(baseValue * qualityMultiplier)}`;
+                } else if (attr.includes("防御力")) {
+                    const baseValue = Math.floor(level * 1.5);
+                    const qualityMultiplier = qualityData.baseMultiplier;
+                    return `${attr}: +${Math.floor(baseValue * qualityMultiplier)}`;
+                } else if (attr.includes("生命值")) {
+                    const baseValue = Math.floor(level * 5);
+                    const qualityMultiplier = qualityData.baseMultiplier;
+                    return `${attr}: +${Math.floor(baseValue * qualityMultiplier)}`;
+                } else if (attr.includes("魔法值")) {
+                    const baseValue = Math.floor(level * 3);
+                    const qualityMultiplier = qualityData.baseMultiplier;
+                    return `${attr}: +${Math.floor(baseValue * qualityMultiplier)}`;
                 }
             });
             
             // 生成附加属性，根据品质
             const additionalCount = Math.min(
-                Math.floor(Math.random() * (quality === 'common' ? 3 : quality === 'mythic' ? 9 : qualityData.dropRate * 10)),
+                qualityData.additionalCount,
                 8 // 最大8条
             );
             
@@ -1210,9 +1242,13 @@
                 let value;
                 
                 if (attrType.includes("加成") || attrType.includes("率")) {
-                    value = `${attrType}: +${Math.floor(Math.random() * 10) + 1}%`;
+                    const baseValue = Math.floor(Math.random() * 10) + 1;
+                    const qualityMultiplier = qualityData.baseMultiplier;
+                    value = `${attrType}: +${Math.floor(baseValue * qualityMultiplier)}%`;
                 } else {
-                    value = `${attrType}: +${Math.floor(Math.random() * 5) + 1}`;
+                    const baseValue = Math.floor(Math.random() * 5) + 1;
+                    const qualityMultiplier = qualityData.baseMultiplier;
+                    value = `${attrType}: +${Math.floor(baseValue * qualityMultiplier)}`;
                 }
                 
                 additionalAttributes.push(value);
@@ -1262,9 +1298,9 @@
             
             if (!map) return;
             
-            // 检查是否是婴儿锅巴地图，且玩家等级≥3时无法进入
+            // 检查是否是婴儿卷王地图，且玩家等级≥3时无法进入
             if (map.id === 0 && gameData.character.level >= 3) {
-                addBattleLog("你的等级已达到3级，无法进入婴儿锅巴地图");
+                addBattleLog("你的等级已达到3级，无法进入婴儿卷王地图");
                 return;
             }
             
@@ -1282,7 +1318,7 @@
             
             // 判断是普通怪物还是BOSS
             let monsterLevel;
-            if (map.id === 0) { // 婴儿锅巴地图
+            if (map.id === 0) { // 婴儿卷王地图
                 monsterLevel = 1; // 强制怪物等级为1
             } else {
                 const isBoss = Math.random() < 0.05; // 5%几率遇到BOSS
@@ -1299,14 +1335,14 @@
             if (monsterLevel >= 11) {
                 if (monsterLevel === map.bossLevel && map.id !== 0) {
                     // BOSS属性
-                    attack = Math.floor(10 * monsterLevel);
-                    defense = Math.floor(15 * monsterLevel);
-                    hp = Math.floor(40 * monsterLevel);
+                    attack = 25 * monsterLevel;
+                    defense = 30 * monsterLevel;
+                    hp = 50 * monsterLevel;
                 } else {
                     // 普通怪物属性
-                    attack = Math.floor(5 * monsterLevel);
-                    defense = Math.floor(8 * monsterLevel);
-                    hp = Math.floor(15 * monsterLevel);
+                    attack = 15 * monsterLevel;
+                    defense = 18 * monsterLevel;
+                    hp = 30 * monsterLevel;
                 }
             } else {
                 // 1-10级怪物属性保持不变
@@ -1391,9 +1427,29 @@
                         quality
                     );
                     
-                    gameData.equipment.inventory.push(equipment);
-                    addBattleLog(`获得了${equipmentQuality[equipment.quality].name}装备：${equipment.name}`);
-                    renderInventory();
+                    // 检查是否符合自动售卖条件
+                    if (equipment.quality <= gameData.autoSellSettings.quality && equipment.level <= gameData.autoSellSettings.level) {
+                        // 计算售卖价格
+                        let basePrice = equipment.level * 10;
+                        let qualityMultiplier = 1;
+                        
+                        switch (equipment.quality) {
+                            case 'uncommon': qualityMultiplier = 1.5; break;
+                            case 'rare': qualityMultiplier = 2; break;
+                            case 'epic': qualityMultiplier = 3; break;
+                            case 'legendary': qualityMultiplier = 5; break;
+                            case 'mythic': qualityMultiplier = 10; break;
+                        }
+                        
+                        const sellPrice = Math.floor(basePrice * qualityMultiplier);
+                        gameData.character.gold += sellPrice;
+                        
+                        addBattleLog(`自动售卖了${equipmentQuality[equipment.quality].name}装备：${equipment.name}，获得${sellPrice}金币`);
+                    } else {
+                        gameData.equipment.inventory.push(equipment);
+                        addBattleLog(`获得了${equipmentQuality[equipment.quality].name}装备：${equipment.name}`);
+                        renderInventory();
+                    }
                 }
                 
                 // 掉落水晶
@@ -1405,7 +1461,7 @@
                     crystalGain = crystalBonus > 0 ? crystalGain * (1 + crystalBonus / 100) : crystalGain;
                     
                     gameData.character.crystal += crystalGain;
-                    addBattleLog(`获得了${crystalGain}水晶`);
+                    addBattleLog(`获得了${crystalGain.toFixed(2)}水晶`);
                 }
             }
             
@@ -1434,9 +1490,6 @@
             while (gameData.character.exp >= gameData.character.maxExp && gameData.character.level < 200) {
                 gameData.character.level++;
                 gameData.character.exp -= gameData.character.maxExp;
-                gameData.character.attrPoints += 3;
-                
-                // 更新最大经验
                 gameData.character.maxExp = gameData.character.level * gameData.character.level * 100;
                 
                 // 更新属性
@@ -1447,7 +1500,7 @@
                     showAwakeningModal();
                 }
                 
-                addBattleLog(`恭喜！升级到${gameData.character.level}级！获得3点属性点`);
+                addBattleLog(`恭喜！升级到${gameData.character.level}级！`);
                 
                 // 更新UI
                 updateUI();
@@ -1456,69 +1509,54 @@
 
         // 更新衍生属性
         function updateDerivedStats() {
-            // 计算基础属性
-            const str = gameData.character.stats.str;
-            const agi = gameData.character.stats.agi;
-            const vit = gameData.character.stats.vit;
-            const int = gameData.character.stats.int;
+            const level = gameData.character.level;
             
-            // 计算攻击（每5点力量增加1点攻击）
-            gameData.character.derivedStats.attack = Math.floor(str / 5);
+            // 初始化基础属性
+            let attack = 5;
+            let defense = 5;
+            let hp = 30;
+            let mp = 30;
             
-            // 计算防御（每5点敏捷增加1点防御）
-            gameData.character.derivedStats.defense = Math.floor(agi / 5);
-            
-            // 计算生命值（每1点体力增加1点生命值）
-            gameData.character.derivedStats.hp = vit;
-            
-            // 计算魔法值（每5点智力增加1点魔法值）
-            gameData.character.derivedStats.mp = Math.floor(int / 5);
-            
-            // 初始化加成属性
-            gameData.character.derivedStats.expBonus = 0;
-            gameData.character.derivedStats.goldBonus = 0;
-            gameData.character.derivedStats.crystalBonus = 0;
-            
-            // 装备加成
-            let equipmentAttackBonus = 0;
-            let equipmentDefenseBonus = 0;
-            let equipmentHpBonus = 0;
-            let equipmentMpBonus = 0;
-            
+            // 遍历装备槽位
             for (const slotId in gameData.equipment.slots) {
                 const equipment = gameData.equipment.slots[slotId];
                 if (!equipment) continue;
                 
                 // 解析基础属性
                 equipment.baseAttributes.forEach(attr => {
-                    if (attr.includes("力量")) {
+                    if (attr.includes("攻击力")) {
                         const value = parseInt(attr.match(/\d+/)[0]);
-                        equipmentAttackBonus += Math.floor(value / 5); // 每5点力量增加1点攻击
-                        gameData.character.stats.str += value;
-                    } else if (attr.includes("敏捷")) {
+                        attack += value;
+                    } else if (attr.includes("防御力")) {
                         const value = parseInt(attr.match(/\d+/)[0]);
-                        equipmentDefenseBonus += Math.floor(value / 5); // 每5点敏捷增加1点防御
-                        gameData.character.stats.agi += value;
-                    } else if (attr.includes("体力")) {
+                        defense += value;
+                    } else if (attr.includes("生命值")) {
                         const value = parseInt(attr.match(/\d+/)[0]);
-                        equipmentHpBonus += value; // 每1点体力增加1点生命值
-                        gameData.character.stats.vit += value;
-                    } else if (attr.includes("智力")) {
+                        hp += value;
+                    } else if (attr.includes("魔法值")) {
                         const value = parseInt(attr.match(/\d+/)[0]);
-                        equipmentMpBonus += Math.floor(value / 5); // 每5点智力增加1点魔法值
-                        gameData.character.stats.int += value;
+                        mp += value;
                     }
                 });
+            }
+            
+            // 初始化加成属性
+            gameData.character.derivedStats.expBonus = 0;
+            gameData.character.derivedStats.goldBonus = 0;
+            gameData.character.derivedStats.crystalBonus = 0;
+            gameData.character.derivedStats.critRate = 0;
+            gameData.character.derivedStats.critDamage = 0;
+            gameData.character.derivedStats.attackBonus = 0;
+            gameData.character.derivedStats.defenseBonus = 0;
+            
+            // 遍历装备槽位，更新附加属性
+            for (const slotId in gameData.equipment.slots) {
+                const equipment = gameData.equipment.slots[slotId];
+                if (!equipment) continue;
                 
                 // 解析附加属性
                 equipment.additionalAttributes.forEach(attr => {
-                    if (attr.includes("攻击力加成")) {
-                        const percentage = parseInt(attr.match(/\d+/)[0]);
-                        equipmentAttackBonus += Math.floor(gameData.character.derivedStats.attack * (percentage / 100));
-                    } else if (attr.includes("防御力加成")) {
-                        const percentage = parseInt(attr.match(/\d+/)[0]);
-                        equipmentDefenseBonus += Math.floor(gameData.character.derivedStats.defense * (percentage / 100));
-                    } else if (attr.includes("经验掉落加成")) {
+                    if (attr.includes("经验掉落加成")) {
                         const percentage = parseInt(attr.match(/\d+/)[0]);
                         gameData.character.derivedStats.expBonus += percentage;
                     } else if (attr.includes("金币掉落加成")) {
@@ -1527,15 +1565,31 @@
                     } else if (attr.includes("水晶掉落加成")) {
                         const percentage = parseInt(attr.match(/\d+/)[0]);
                         gameData.character.derivedStats.crystalBonus += percentage;
+                    } else if (attr.includes("暴击率")) {
+                        const percentage = parseInt(attr.match(/\d+/)[0]);
+                        gameData.character.derivedStats.critRate += percentage;
+                    } else if (attr.includes("暴击伤害")) {
+                        const percentage = parseInt(attr.match(/\d+/)[0]);
+                        gameData.character.derivedStats.critDamage += percentage;
+                    } else if (attr.includes("攻击力加成")) {
+                        const percentage = parseInt(attr.match(/\d+/)[0]);
+                        gameData.character.derivedStats.attackBonus += percentage;
+                    } else if (attr.includes("防御力加成")) {
+                        const percentage = parseInt(attr.match(/\d+/)[0]);
+                        gameData.character.derivedStats.defenseBonus += percentage;
                     }
                 });
             }
             
-            // 应用装备加成
-            gameData.character.derivedStats.attack += equipmentAttackBonus;
-            gameData.character.derivedStats.defense += equipmentDefenseBonus;
-            gameData.character.derivedStats.hp += equipmentHpBonus;
-            gameData.character.derivedStats.mp += equipmentMpBonus;
+            // 应用百分比加成到基础属性
+            attack = Math.floor(attack * (1 + gameData.character.derivedStats.attackBonus / 100));
+            defense = Math.floor(defense * (1 + gameData.character.derivedStats.defenseBonus / 100));
+            
+            // 更新衍生属性
+            gameData.character.derivedStats.attack = attack;
+            gameData.character.derivedStats.defense = defense;
+            gameData.character.derivedStats.hp = hp;
+            gameData.character.derivedStats.mp = mp;
             
             // 更新UI
             updateUI();
@@ -1571,24 +1625,6 @@
                 });
             });
             
-            // 属性点分配
-            document.querySelectorAll('.attribute-point-btn').forEach(btn => {
-                btn.addEventListener('click', () => {
-                    const attr = btn.dataset.attr;
-                    if (gameData.character.attrPoints > 0) {
-                        gameData.character.attrPoints--;
-                        gameData.character.stats[attr]++;
-                        
-                        // 如果是200级后的觉醒属性点
-                        if (gameData.character.level === 200) {
-                            gameData.character.awakeningPoints--;
-                        }
-                        
-                        updateDerivedStats();
-                    }
-                });
-            });
-            
             // 地图点击事件
             document.addEventListener('click', (e) => {
                 if (e.target && e.target.classList.contains('btn') && e.target.dataset.mapId) {
@@ -1599,6 +1635,14 @@
             
             // 装备穿戴/脱下
             document.addEventListener('click', (e) => {
+                // 检查是否处于战斗状态
+                if (gameData.battleInterval) {
+                    if (e.target && (e.target.classList.contains('btn-wear') || e.target.classList.contains('btn-unequip') || e.target.classList.contains('btn-remove-equipment'))) {
+                        showBattleOperationModal();
+                        return;
+                    }
+                }
+                
                 if (e.target && e.target.classList.contains('btn-wear')) {
                     const equipmentElement = e.target.closest('.equipment-item');
                     const equipmentId = parseInt(equipmentElement.dataset.id);
@@ -1621,8 +1665,12 @@
                         gameData.equipment.slots[equipment.slot] = equipment;
                         equipment.equipped = true;
                         
+                        // 更新属性
                         updateDerivedStats();
                         renderInventory();
+                        
+                        // 自动保存
+                        saveGameData();
                     }
                 } else if (e.target && e.target.classList.contains('btn-unequip')) {
                     const equipmentElement = e.target.closest('.equipment-item');
@@ -1639,6 +1687,40 @@
                         
                         addBattleLog(`脱下了${equipment.name}`);
                         renderInventory();
+                        
+                        // 自动保存
+                        saveGameData();
+                    }
+                } else if (e.target && e.target.classList.contains('btn-remove-equipment')) {
+                    const equipmentElement = e.target.closest('.equipment-item');
+                    const equipmentId = parseInt(equipmentElement.dataset.id);
+                    
+                    // 找到装备所在的槽位
+                    let slotId = null;
+                    for (const slot in gameData.equipment.slots) {
+                        if (gameData.equipment.slots[slot] && gameData.equipment.slots[slot].id === equipmentId) {
+                            slotId = slot;
+                            break;
+                        }
+                    }
+                    
+                    if (slotId) {
+                        const equipment = gameData.equipment.slots[slotId];
+                        
+                        // 脱下装备
+                        equipment.equipped = false;
+                        gameData.equipment.slots[slotId] = null;
+                        
+                        // 更新属性
+                        updateDerivedStats();
+                        
+                        addBattleLog(`脱下了${equipment.name}`);
+                        updateUI();
+                        
+                        // 自动保存
+                        saveGameData();
+                    } else {
+                        addBattleLog('未找到对应的装备槽位');
                     }
                 }
             });
@@ -1651,7 +1733,18 @@
                     const equipment = gameData.equipment.inventory.find(e => e.id === equipmentId);
                     
                     if (equipment) {
-                        equipment.locked = !equipment.locked;
+                        equipment.locked = true;
+                        e.target.textContent = '解锁';
+                        renderInventory();
+                    }
+                } else if (e.target && e.target.classList.contains('btn-unlock')) {
+                    const equipmentElement = e.target.closest('.equipment-item');
+                    const equipmentId = parseInt(equipmentElement.dataset.id);
+                    const equipment = gameData.equipment.inventory.find(e => e.id === equipmentId);
+                    
+                    if (equipment) {
+                        equipment.locked = false;
+                        e.target.textContent = '锁定';
                         renderInventory();
                     }
                 }
@@ -1667,38 +1760,36 @@
                     if (equipmentIndex !== -1 && !gameData.equipment.inventory[equipmentIndex].locked) {
                         const equipment = gameData.equipment.inventory[equipmentIndex];
                         
-                        // 检查自动售卖设置
-                        if (equipment.quality <= gameData.autoSellSettings.quality && equipment.level <= gameData.autoSellSettings.level) {
-                            // 计算售卖价格
-                            let basePrice = equipment.level * 10;
-                            let qualityMultiplier = 1;
-                            
-                            switch (equipment.quality) {
-                                case 'uncommon': qualityMultiplier = 1.5; break;
-                                case 'rare': qualityMultiplier = 2; break;
-                                case 'epic': qualityMultiplier = 3; break;
-                                case 'legendary': qualityMultiplier = 5; break;
-                                case 'mythic': qualityMultiplier = 10; break;
-                            }
-                            
-                            const sellPrice = Math.floor(basePrice * qualityMultiplier);
-                            gameData.character.gold += sellPrice;
-                            
-                            // 从背包中移除
-                            gameData.equipment.inventory.splice(equipmentIndex, 1);
-                            
-                            // 如果装备正在穿戴，从装备槽中移除
-                            if (equipment.equipped) {
-                                gameData.equipment.slots[equipment.slot] = null;
-                                updateDerivedStats();
-                            }
-                            
-                            addBattleLog(`售卖了${equipment.name}，获得${sellPrice}金币`);
-                            updateUI();
-                            renderInventory();
-                        } else {
-                            addBattleLog(`装备品质或等级超出自动售卖设置，无法自动售卖`);
+                        // 计算售卖价格
+                        let basePrice = equipment.level * 10;
+                        let qualityMultiplier = 1;
+                        
+                        switch (equipment.quality) {
+                            case 'uncommon': qualityMultiplier = 1.5; break;
+                            case 'rare': qualityMultiplier = 2; break;
+                            case 'epic': qualityMultiplier = 3; break;
+                            case 'legendary': qualityMultiplier = 5; break;
+                            case 'mythic': qualityMultiplier = 10; break;
                         }
+                        
+                        const sellPrice = Math.floor(basePrice * qualityMultiplier);
+                        gameData.character.gold += sellPrice;
+                        
+                        // 从背包中移除
+                        gameData.equipment.inventory.splice(equipmentIndex, 1);
+                        
+                        // 如果装备正在穿戴，从装备槽中移除
+                        if (equipment.equipped) {
+                            gameData.equipment.slots[equipment.slot] = null;
+                            updateDerivedStats();
+                        }
+                        
+                        addBattleLog(`售卖了${equipment.name}，获得${sellPrice}金币`);
+                        updateUI();
+                        renderInventory();
+                        
+                        // 自动保存
+                        saveGameData();
                     }
                 }
             });
@@ -1743,6 +1834,9 @@
                 addBattleLog(`一键售卖了${sellableEquipment.length}件装备，获得${totalGold}金币`);
                 updateUI();
                 renderInventory();
+                
+                // 自动保存
+                saveGameData();
             });
             
             // 自动售卖设置
@@ -1796,6 +1890,12 @@
                 
                 if (!equipment) return;
                 
+                // 检查是否处于战斗状态
+                if (gameData.battleInterval) {
+                    showBattleOperationModal();
+                    return;
+                }
+                
                 // 计算强化成本
                 const cost = Math.floor(100 * Math.pow(1.1, equipment.reinforce));
                 
@@ -1825,6 +1925,9 @@
                 
                 updateUI();
                 renderWornEquipment();
+                
+                // 自动保存
+                saveGameData();
             });
             
             // 进化装备
@@ -1839,6 +1942,12 @@
                 const equipment = gameData.equipment.inventory.find(e => e.id === equipmentId);
                 
                 if (!equipment) return;
+                
+                // 检查是否处于战斗状态
+                if (gameData.battleInterval) {
+                    showBattleOperationModal();
+                    return;
+                }
                 
                 // 检查是否有足够的卷轴
                 const scrollCount = gameData.equipment.inventory.filter(e => e.name === "提升卷轴").length;
@@ -1872,21 +1981,9 @@
                 
                 updateUI();
                 renderWornEquipment();
-            });
-            
-            // 购买属性点
-            document.getElementById('buy-attr-point').addEventListener('click', () => {
-                const crystalCost = 10; // 10水晶购买1点属性
-                const pointsToBuy = 1;
                 
-                if (gameData.character.crystal >= crystalCost) {
-                    gameData.character.crystal -= crystalCost;
-                    gameData.character.attrPoints += pointsToBuy;
-                    addBattleLog(`购买了${pointsToBuy}点属性点，花费${crystalCost}水晶`);
-                    updateUI();
-                } else {
-                    addBattleLog('水晶不足，无法购买属性点');
-                }
+                // 自动保存
+                saveGameData();
             });
             
             // 购买进化卷轴
@@ -1907,56 +2004,60 @@
                 }
             });
             
-            // 战斗速度设置
-            document.getElementById('battle-speed').addEventListener('change', (e) => {
-                gameData.battleSpeed = parseInt(e.target.value);
-                
+            // 暂停战斗按钮
+            document.getElementById('pause-battle').addEventListener('click', () => {
                 if (gameData.battleInterval) {
                     clearInterval(gameData.battleInterval);
-                    startBattle(gameData.currentMap.id);
+                    gameData.battleInterval = null;
+                    addBattleLog('战斗已暂停');
+                } else {
+                    addBattleLog('当前没有战斗');
                 }
-                
-                addBattleLog(`战斗速度已设置为每${e.target.options[e.target.selectedIndex].text}战斗一次`);
             });
             
-            // 觉醒确认按钮
-            document.getElementById('awakening-confirm-btn').addEventListener('click', () => {
-                document.getElementById('awakening-modal').style.display = 'none';
+            // 关闭战斗操作提示弹窗
+            document.getElementById('battle-operation-close-btn').addEventListener('click', () => {
+                document.getElementById('battle-operation-modal').style.display = 'none';
             });
             
-            // 结果弹窗关闭按钮
+            // 关闭结果弹窗
             document.getElementById('modal-close-btn').addEventListener('click', () => {
                 document.getElementById('result-modal').style.display = 'none';
             });
             
-            // 弹窗关闭按钮
+            // 关闭觉醒弹窗
+            document.getElementById('awakening-confirm-btn').addEventListener('click', () => {
+                document.getElementById('awakening-modal').style.display = 'none';
+            });
+            
+            // 关闭所有弹窗的关闭按钮
             document.querySelectorAll('.modal-close').forEach(closeBtn => {
                 closeBtn.addEventListener('click', () => {
                     closeBtn.closest('.modal').style.display = 'none';
                 });
             });
             
-            // 脱下装备槽中的装备
-            document.addEventListener('click', (e) => {
+            // 装备槽点击事件
+            document.querySelectorAll('.slot').forEach(slot => {
+            slot.addEventListener('click', (e) => {
+                // 检查是否点击的是“脱下”按钮
                 if (e.target && e.target.classList.contains('btn-remove-equipment')) {
-                    const slotId = e.target.dataset.slot;
-                    const equipment = gameData.equipment.slots[slotId];
-                    
-                    if (equipment) {
-                        // 更新装备的穿戴状态
-                        equipment.equipped = false;
-                        
-                        // 从装备槽中移除
-                        gameData.equipment.slots[slotId] = null;
-                        
-                        // 更新属性
-                        updateDerivedStats();
-                        
-                        addBattleLog(`脱下了${equipment.name}`);
-                        updateUI();
-                        renderInventory();
-                    }
+                    return; // 不执行打开装备选择弹窗的操作
                 }
+                
+                const slotId = slot.dataset.slot;
+                showEquipmentSelectionModal(slotId);
+            });
+        });
+            
+            // 装备选择弹窗关闭按钮
+            document.getElementById('equipment-selection-close').addEventListener('click', () => {
+                document.getElementById('equipment-selection-modal').style.display = 'none';
+            });
+            
+            // 装备选择弹窗取消按钮
+            document.getElementById('equipment-selection-cancel').addEventListener('click', () => {
+                document.getElementById('equipment-selection-modal').style.display = 'none';
             });
         }
 
@@ -1981,10 +2082,6 @@
             gameData.character.level = 1;
             gameData.character.exp = 0;
             gameData.character.maxExp = 100;
-            gameData.character.awakeningPoints += 100;
-            
-            // 重置属性点
-            gameData.character.attrPoints = 100;
             
             // 更新最大经验
             gameData.character.maxExp = gameData.character.level * gameData.character.level * 100;
@@ -1994,6 +2091,100 @@
             
             // 更新UI
             updateUI();
+        }
+
+        // 显示战斗中操作提示弹窗
+        function showBattleOperationModal() {
+            elements.battleOperationModal.style.display = 'flex';
+        }
+
+        // 显示装备选择弹窗
+        function showEquipmentSelectionModal(slotId) {
+            // 清空装备选择网格
+            elements.equipmentSelectionGrid.innerHTML = '';
+            
+            // 筛选背包中对应部位的装备
+            const slotEquipment = gameData.equipment.inventory.filter(equipment => {
+                return equipment.slot === slotId && !equipment.equipped;
+            });
+            
+            // 如果没有可用装备，显示提示
+            if (slotEquipment.length === 0) {
+                const noEquipmentElement = document.createElement('div');
+                noEquipmentElement.className = 'stat-item';
+                noEquipmentElement.innerHTML = `<div>没有可用的${equipmentSlots[slotId]}装备</div>`;
+                elements.equipmentSelectionGrid.appendChild(noEquipmentElement);
+            } else {
+                // 添加装备到选择网格
+                slotEquipment.forEach(equipment => {
+                    const equipmentElement = document.createElement('div');
+                    equipmentElement.className = `equipment-item ${equipment.locked ? 'locked' : ''}`;
+                    equipmentElement.dataset.id = equipment.id;
+                    
+                    equipmentElement.innerHTML = `
+                        <div class="equipment-name">
+                            <span class="quality quality-${equipment.quality}">${equipmentQuality[equipment.quality].name}</span> ${equipment.name}
+                            ${equipment.reinforce > 0 ? `+${equipment.reinforce}` : ''}
+                            ${equipment.evolve > 0 ? `★${equipment.evolve}` : ''}
+                        </div>
+                        <div class="equipment-info">
+                            部位: ${equipmentSlots[equipment.slot]} | 等级: ${equipment.level}
+                        </div>
+                        <div class="equipment-attrs">
+                            ${equipment.baseAttributes.map(attr => `<div class="equipment-attr">${attr}</div>`).join('')}
+                            ${equipment.additionalAttributes.map(attr => `<div class="equipment-attr">${attr}</div>`).join('')}
+                        </div>
+                        <button class="btn btn-success" data-equip-id="${equipment.id}">穿戴</button>
+                    `;
+                    
+                    elements.equipmentSelectionGrid.appendChild(equipmentElement);
+                });
+            }
+            
+            // 设置弹窗标题
+            document.querySelector('.equipment-selection-title').textContent = `选择${equipmentSlots[slotId]}`;
+            
+            // 显示弹窗
+            elements.equipmentSelectionModal.style.display = 'flex';
+            
+            // 添加装备选择事件
+            document.querySelectorAll('[data-equip-id]').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const equipmentId = parseInt(btn.dataset.equipId);
+                    const equipment = gameData.equipment.inventory.find(e => e.id === equipmentId);
+                    
+                    if (equipment) {
+                        // 检查装备等级是否高于角色等级
+                        if (equipment.level > gameData.character.level) {
+                            addBattleLog(`装备等级${equipment.level}高于你的角色等级${gameData.character.level}，无法穿戴`);
+                            return;
+                        }
+                        
+                        // 检查该部位是否已有装备
+                        if (gameData.equipment.slots[slotId]) {
+                            addBattleLog(`该部位已有装备，无法穿戴`);
+                            return;
+                        }
+                        
+                        // 穿戴新装备
+                        gameData.equipment.slots[slotId] = equipment;
+                        equipment.equipped = true;
+                        
+                        // 更新属性
+                        updateDerivedStats();
+                        
+                        // 关闭弹窗
+                        elements.equipmentSelectionModal.style.display = 'none';
+                        
+                        // 更新UI
+                        updateUI();
+                        renderInventory();
+                        
+                        // 自动保存
+                        saveGameData();
+                    }
+                });
+            });
         }
 
         // 检查离线收益
@@ -2018,9 +2209,6 @@
                     while (gameData.character.exp >= gameData.character.maxExp && gameData.character.level < 200) {
                         gameData.character.level++;
                         gameData.character.exp -= gameData.character.maxExp;
-                        gameData.character.attrPoints += 3;
-                        
-                        // 更新最大经验
                         gameData.character.maxExp = gameData.character.level * gameData.character.level * 100;
                         
                         // 更新属性
