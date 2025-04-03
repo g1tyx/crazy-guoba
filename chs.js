@@ -346,6 +346,7 @@ var cnPostfix = {
     ' XV': ' XV',
     ' XVI': ' XVI',
     "\n                                \n                                ": "\n                                \n                                ",
+    "\n                            \n                            ": "\n                            \n                            ",
     "\n                        \n                        ": "\n                        \n                        ",
     "gloves": "手套",
     "weaponoff": "武器副手",
